@@ -1,0 +1,40 @@
+extends layout
+
+include _includes/sharedHTMLfunctions
+
+block content
+  .row.page-header
+    .col-lg-12
+      h1= pageHeader.title
+  .row
+    .col-xs-12.col-md-9
+      .row
+        .col-xs-12.col-sm-6
+          p.rating
+            +outputRating(location.rating)
+          p= location.address
+          .panel.panel-primary
+            .panel-heading
+              h2.panel-title Latest Review
+            .panel-body
+              p= location.latestReview
+          .panel.panel-primary
+            .panel-heading
+              h2.panel-title Categories
+            .panel-body
+              each category in location.categories
+                span.label.label-warning
+                  span.glyphicon.glyphicon-ok
+                  | &nbsp;#{category}
+                | &nbsp;
+
+        .col-xs-12.col-sm-6.location-map
+          .panel.panel-primary
+            .panel-heading
+              h2.panel-title Location map
+            .panel-body
+              img.img-responsive.img-rounded(src='http://maps.googleapis.com/maps/api/staticmap?center=51.455041, -0.9690884 & zoom = 17 & size = 400x350&sensor=false&markers=51.455041,-0.9690884&scale=2')
+
+    .col-xs-12.col-md-3
+      p.lead #{location.name} #{sidebar.context}
+      p= sidebar.callToAction
