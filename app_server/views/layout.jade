@@ -22,9 +22,15 @@ html(ng-app='gotFoodApp')
               a(href='/about/') About
 
     .container
-      block content
+      div(ng-view)
+        block content
 
     script(src='/components/angular/angular.min.js')
-    script(src='/gotFood.js')
+    script(src='/lib/angular-route.min.js')
+    //script(src='/gotFood.js')
+    script(src='/app.js')
+    script(src='/home/home.controller.js')
+    script(src='/common/services/gotFoodData.service.js')
+    script(src='/common/directives/ratingStars/ratingStars.directive.js')
     script(src='/components/jquery/dist/jquery.min.js')
     script(src='/components/bootstrap/dist/js/bootstrap.min.js')

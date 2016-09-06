@@ -71,26 +71,6 @@ module.exports.locationsList = function(req, res) {
   console.log('locationsList');
 
   request_yelp({}, function(error, response, body) {
-    var data = [{
-      name: 'Starbucks',
-      address: '125 High Street, Reading, RG6 1PS',
-      rating: 3,
-      categories: ['Hot drinks', 'Food', 'Premium wifi'],
-      distance: '0.296456'
-    }, {
-      name: 'Cafe Hero',
-      address: '125 High Street, Reading, RG6 1PS',
-      rating: 4,
-      categories: ['Hot drinks', 'Food', 'Premium wifi'],
-      distance: '0.396456'
-    }, {
-      name: 'Burger Queen',
-      address: '125 High Street, Reading, RG6 1PS',
-      rating: 2,
-      categories: ['Food', 'Premium wifi'],
-      distance: '1.20000'
-    }];
-
     var all = JSON.parse(body);
     var locations = buildLocationList(all.businesses);
 
