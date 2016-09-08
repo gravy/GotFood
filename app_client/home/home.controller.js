@@ -30,7 +30,9 @@
     };
 
     vm.getLocations = function(loc, type, sort) {
-      var lowerType = type.toLowerCase();
+      if (type !== undefined) {
+        var lowerType = type.toLowerCase();
+      }
       vm.getData({loc: loc, term: lowerType, sort: sort});
     };
 
