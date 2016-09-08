@@ -3,13 +3,13 @@
   angular.module('gotFoodApp')
     .service('gotFoodData', gotFoodData);
 
+  gotFoodData.$inject = ['$http'];
   function gotFoodData($http) {
-    var locationByLocation = function (loc, term) {
-      //return $http.get('/api/locations?loc=' + loc + '&term=' + term);
-      return $http.get('/api/locations');
+    var locationByOptions = function (loc, term, sort) {
+      return $http.get('/api/locations?loc=' + loc + '&term=' + term + '&sort=' + sort);
     };
     return {
-      locationByLocation: locationByLocation
+      locationByOptions: locationByOptions
     };
   }
 

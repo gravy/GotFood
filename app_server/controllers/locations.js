@@ -1,15 +1,28 @@
-/* GET 'home' page */
-module.exports.homelist = function(req, res){
-  renderHomepage(req, res);
+var request = require('request');
+var apiOptions = {
+  server : "http://localhost:3333"
 };
 
-var renderHomepage = function(req, res, responseBody){
-  res.render('locations-list', {
-    title: 'GotFood - Find good places to eat!',
-    pageHeader: {
-      title: 'GotFood',
-      strapline: 'Find good places to eat near you!'
-    },
-    sidebar: "Just select the type of food your looking for and GotFood will find it in your area."
+var _showError = function (req, res, status) {
+  var title, content;
+  if (status === 404) {
+    title = "404, page not found";
+    content = "Oh dear. Looks like we can't find this page. Sorry.";
+  } else if (status === 500) {
+    title = "500, internal server error";
+    content = "How embarrassing. There's a problem with our server.";
+  } else {
+    title = status + ", something's gone wrong";
+    content = "Something, somewhere, has gone just a little bit wrong.";
+  }
+  res.status(status);
+  res.render('generic-text', {
+    title : title,
+    content : content
   });
 };
+
+
+
+
+

@@ -14,19 +14,23 @@
       content: "Just select the location and type of food your looking for and GotFood will list the possible choices."
     };
 
-    vm.getData = function (options) {
-      var loc = options.location,
-          term = options.term;
-      vm.message = "Searching for nearby places";
-      gotFoodData.locationByLocation(loc, term)
+    vm.getData = function(options) {
+      var loc = options.loc,
+          term = options.term,
+          sort = options.sort;
+      vm.message = "Searching for places";
+      gotFoodData.locationByOptions(loc, term, sort)
         .success(function(data) {
-          vm.message = data.length > 0 ? "" : "No locations found nearby";
+          vm.message = data.length > 0 ? "" : "No locations found";
           vm.data = { locations: data };
-          console.log(vm.data);
         })
         .error(function (e) {
           vm.message = "Sorry, something's gone wrong, please try again later";
         });
+    };
+
+    vm.getLocations = function(loc, type, sort) {
+      vm.getData({loc: loc, term: type, sort: sort});
     };
 
     vm.showError = function (error) {
@@ -34,8 +38,6 @@
         vm.message = error.message;
       });
     };
-
-    vm.getData({loc: 'Phoenix', term: 'mexican'});
   }
 })();
 

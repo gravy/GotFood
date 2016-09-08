@@ -20,23 +20,40 @@ var request_yelp = function(set_parameters, callback) {
   /* We can setup default parameters here */
   var default_parameters = {
     location: 'San+Jose',
-    category_filter: 'pizza',
-    sort: '2'
+    category_filter: '',
+    sort: '0'
   };
+
+  var parms = {};
+  if (set_parameters.location === 'undefined') {
+    parms.location = default_parameters.location;
+  } else {
+    parms.location = set_parameters.location;
+  }
+  if (set_parameters.category_filter === 'undefined') {
+    parms.category_filter = default_parameters.category_filter;
+  } else {
+    parms.category_filter = set_parameters.category_filter;
+  }
+  if (set_parameters.sort === 'undefined') {
+    parms.sort = default_parameters.sort;
+  } else {
+    parms.sort = set_parameters.sort;
+  }
 
   /* We set the require parameters here */
   var required_parameters = {
-    oauth_consumer_key : 'Qwgp7pKNc4ncfLh00vka2w',
-    oauth_token : 'fRZGaM5ITW6QAmemO_knZ1sRak1GOshp',
-    oauth_nonce : n(),
-    oauth_timestamp : n().toString().substr(0,10),
-    oauth_signature_method : 'HMAC-SHA1',
-    oauth_version : '1.0'
+    oauth_consumer_key: 'Qwgp7pKNc4ncfLh00vka2w',
+    oauth_token: 'fRZGaM5ITW6QAmemO_knZ1sRak1GOshp',
+    oauth_nonce: n(),
+    oauth_timestamp: n().toString().substr(0,10),
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_version: '1.0'
   };
 
   /* We combine all the parameters in order of importance */
-  var parameters = _.assign(default_parameters, set_parameters, required_parameters);
-
+  var parameters = _.assign(default_parameters, parms, required_parameters);
+  //var parameters = $.extend({}, parms, required_parameters);
   /* We set our secrets here */
   var consumerSecret = 'rxKMxm_KfcMlthg12Jo-ZpYjbdk';
   var tokenSecret = 'TPrGlj9zfoLl1jRJlKLyqRJjUBo';
@@ -68,9 +85,12 @@ var sendJSONresponse = function(res, status, content) {
 
 /* GET list of locations */
 module.exports.locationsList = function(req, res) {
-  console.log('locationsList');
+  var settings = {};
+  settings.location = req.query.loc;
+  settings.category_filter = req.query.term;
+  settings.sort = req.query.sort;
 
-  request_yelp({}, function(error, response, body) {
+  request_yelp(settings, function(error, response, body) {
     var all = JSON.parse(body);
     var locations = buildLocationList(all.businesses);
 
@@ -88,42 +108,12 @@ var buildLocationList = function(results) {
     });
 
     locations.push({
-      //distance: theEarth.getDistanceFromRads(doc.dis),
       name: loc.name,
       address: loc.location.display_address.join(', '),
       rating: loc.rating,
-      categories: categories,
-      distance: '0'
+      categories: categories
     });
   });
   return locations;
-};
-
-/* GET a location by the id */
-module.exports.locationsReadOne = function(req, res) {
-  console.log('Finding location details', req.params);
-  if (req.params && req.params.locationid) {
-    Loc
-      .findById(req.params.locationid)
-      .exec(function(err, location) {
-        if (!location) {
-          sendJSONresponse(res, 404, {
-            "message": "locationid not found"
-          });
-          return;
-        } else if (err) {
-          console.log(err);
-          sendJSONresponse(res, 404, err);
-          return;
-        }
-        console.log(location);
-        sendJSONresponse(res, 200, location);
-      });
-  } else {
-    console.log('No locationid specified');
-    sendJSONresponse(res, 404, {
-      "message": "No locationid in request"
-    });
-  }
 };
 
