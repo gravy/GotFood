@@ -136,23 +136,25 @@ module.exports.locationsList = function(req, res) {
 var buildLocationList = function(results, lat1, lng1) {
   var locations = [];
 
-  results.forEach(function(loc) {
-    var categories = [];
-    loc.categories.forEach(function(category) {
-      categories.push(category[0]);
-    });
+  if (results !== undefined) {
+    results.forEach(function (loc) {
+      var categories = [];
+      loc.categories.forEach(function (category) {
+        categories.push(category[0]);
+      });
 
-    var lat2 = loc.location.coordinate.latitude;
-    var lng2 = loc.location.coordinate.longitude;
+      var lat2 = loc.location.coordinate.latitude;
+      var lng2 = loc.location.coordinate.longitude;
 
-    locations.push({
-      name: loc.name,
-      address: loc.location.display_address.join(', '),
-      rating: loc.rating,
-      categories: categories,
-      distance: theEarth.getDistance(lat1, lng1, lat2, lng2)
+      locations.push({
+        name: loc.name,
+        address: loc.location.display_address.join(', '),
+        rating: loc.rating,
+        categories: categories,
+        distance: theEarth.getDistance(lat1, lng1, lat2, lng2)
+      });
     });
-  });
+  }
 
   return locations;
 };
