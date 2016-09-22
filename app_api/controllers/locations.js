@@ -83,6 +83,38 @@ var sendJSONresponse = function(res, status, content) {
   res.json(content);
 };
 
+var theEarth = (function() {
+  var earthRadius = 6371; // km, miles is 3959
+
+  // This function takes in latitude and longitude of two location and
+  // returns the distance between them as the crow flies (in miles)
+  function getDistance(lat1, lng1, lat2, lng2) {
+    var R = earthRadius;
+    var dLat = toRad(lat2 - lat1);
+    var dLon = toRad(lng2 - lng1);
+    var lat1 = toRad(lat1);
+    var lat2 = toRad(lat2);
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c;
+    //return d;
+    return d * 0.62137; // convert to miles
+  }
+
+  // Converts numeric degrees to radians
+  function toRad(Value)
+  {
+    return Value * Math.PI / 180;
+  }
+
+  return {
+    getDistance: getDistance
+  };
+
+})();
+
 /* GET list of locations */
 module.exports.locationsList = function(req, res) {
   var settings = {};
@@ -90,30 +122,40 @@ module.exports.locationsList = function(req, res) {
   settings.category_filter = req.query.term;
   settings.sort = req.query.sort;
 
+  var curLat = req.query.curlat;
+  var curLng = req.query.curlng;
+
   request_yelp(settings, function(error, response, body) {
     var all = JSON.parse(body);
-    var locations = buildLocationList(all.businesses);
+    var locations = buildLocationList(all.businesses, curLat, curLng);
 
     sendJSONresponse(res, 200, locations);
   });
 };
 
-var buildLocationList = function(results) {
+var buildLocationList = function(results, lat1, lng1) {
   var locations = [];
 
-  results.forEach(function(loc) {
-    var categories = [];
-    loc.categories.forEach(function(category) {
-      categories.push(category[0]);
-    });
+  if (results !== undefined) {
+    results.forEach(function (loc) {
+      var categories = [];
+      loc.categories.forEach(function (category) {
+        categories.push(category[0]);
+      });
 
-    locations.push({
-      name: loc.name,
-      address: loc.location.display_address.join(', '),
-      rating: loc.rating,
-      categories: categories
+      var lat2 = loc.location.coordinate.latitude;
+      var lng2 = loc.location.coordinate.longitude;
+
+      locations.push({
+        name: loc.name,
+        address: loc.location.display_address.join(', '),
+        rating: loc.rating,
+        categories: categories,
+        distance: theEarth.getDistance(lat1, lng1, lat2, lng2)
+      });
     });
-  });
+  }
+
   return locations;
 };
 
